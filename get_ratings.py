@@ -69,6 +69,10 @@ actions = {
     "Negative": "sell",
 }
 
+pricedata = {}
+for i in stocks.values():
+    pricedata[i] = yf.Ticker(i).history(period="max")
+
 all = []
 for i in stocks.values():
     df = yf.Ticker(i).upgrades_downgrades
@@ -80,4 +84,3 @@ for i in stocks.values():
     all.append(df)
 
 master = pd.concat(all, ignore_index=True)
-print(master.head())
