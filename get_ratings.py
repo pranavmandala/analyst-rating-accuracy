@@ -68,3 +68,16 @@ actions = {
     "Market Underperform": "sell",
     "Negative": "sell",
 }
+
+all = []
+for i in stocks.values():
+    df = yf.Ticker(i).upgrades_downgrades
+    df = df.reset_index()
+    df = df[df['ToGrade'] != '']
+    df['rating'] = df['ToGrade'].map(actions)
+    df = df.dropna(subset=['rating'])
+    df['ticker'] = i
+    all.append(df)
+
+master = pd.concat(all, ignore_index=True)
+print(master.head())
