@@ -69,9 +69,24 @@ actions = {
     "Negative": "sell",
 }
 
+def get_forward_return(ticker, event_date, months):
+    df = pricedata[ticker]
+
+    df = df.copy()
+    df.index = df.index.tz_localize(None)
+
+    target_date = event_date + pd.DateOffset(month = months)
+    start_slice = df[df.index >= event_date]
+    end_slice = df[df.index >= target_date]
+    if start_slice.empty or end_slice.empty:
+        return None
+    start_price = start_slice.iloc[0]['Close']
+    end_price = end_slice.iloc[0]['Close']
+
+    return (end_price - start_price) / start_price
 pricedata = {}
 for i in stocks.values():
-    pricedata[i] = yf.Ticker(i).history(period="max")
+    pricedata[i] = yf.Ticker(i).history(period="13y")
 
 all = []
 for i in stocks.values():
@@ -84,3 +99,4 @@ for i in stocks.values():
     all.append(df)
 
 master = pd.concat(all, ignore_index=True)
+
