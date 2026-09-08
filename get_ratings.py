@@ -74,8 +74,8 @@ def get_forward_return(ticker, event_date, months):
 
     df = df.copy()
     df.index = df.index.tz_localize(None)
-
-    target_date = event_date + pd.DateOffset(month = months)
+    event_date = pd.to_datetime(event_date).tz_localize(None)
+    target_date = event_date + pd.DateOffset(months = months)
     start_slice = df[df.index >= event_date]
     end_slice = df[df.index >= target_date]
     if start_slice.empty or end_slice.empty:
@@ -84,6 +84,7 @@ def get_forward_return(ticker, event_date, months):
     end_price = end_slice.iloc[0]['Close']
 
     return (end_price - start_price) / start_price
+
 pricedata = {}
 for i in stocks.values():
     pricedata[i] = yf.Ticker(i).history(period="13y")
@@ -99,4 +100,6 @@ for i in stocks.values():
     all.append(df)
 
 master = pd.concat(all, ignore_index=True)
-
+master['ret_1m'] = master.apply(lambda row: get_forward_return(row['ticker'], row['GradeDate'], 1), axis=1)
+master['ret_3m'] = master.apply(lambda row: get_forward_return(row['ticker'], row['GradeDate'], 3), axis=1)
+master['ret_6m'] = master.apply(lambda row: get_forward_return(row['ticker'], row['GradeDate'], 6), axis=1)
