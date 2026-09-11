@@ -22,8 +22,8 @@ stocks = {
     "Bank of America" : "BAC",
     "Amazon" : "AMZN",
     "Tesla" : "TSLA",
-    "Meta" : "Meta",
-    "Google" : "Googl",
+    "Meta" : "META",
+    "Google" : "GOOGL",
     "Netflix" : "NFLX",
     "Disney" : "DIS",
     "Verizon" : "VZ",
@@ -85,6 +85,22 @@ def get_forward_return(ticker, event_date, months):
 
     return (end_price - start_price) / start_price
 
+
+def get_spy_return(event_date, months):
+    df = spy_df.copy()
+    df.index = df.index.tz_localize(None)
+    event_date = pd.to_datetime(event_date).tz_localize(None)
+    target_date = event_date + pd.DateOffset(months = months)
+    start_slice = df[df.index >= event_date]
+    end_slice = df[df.index <= event_date]
+    if start_slice.empty or end_slice.empty:
+        return None
+    start_price = start_slice.iloc[0]['Close']
+    end_price = end_slice.iloc[0]['Close']
+    return (end_price - start_price) / start_price
+
+spy_df = yf.Ticker("^GSPC").history(period="13y")
+
 pricedata = {}
 for i in stocks.values():
     pricedata[i] = yf.Ticker(i).history(period="13y")
@@ -103,3 +119,9 @@ master = pd.concat(all, ignore_index=True)
 master['ret_1m'] = master.apply(lambda row: get_forward_return(row['ticker'], row['GradeDate'], 1), axis=1)
 master['ret_3m'] = master.apply(lambda row: get_forward_return(row['ticker'], row['GradeDate'], 3), axis=1)
 master['ret_6m'] = master.apply(lambda row: get_forward_return(row['ticker'], row['GradeDate'], 6), axis=1)
+master['spy_ret_1m'] = master['GradeDate'].apply(lambda d: get_spy_return(d, 1))
+master['spy_ret_3m'] = master['GradeDate'].apply(lambda d: get_spy_return(d, 3))
+master['spy_ret_6m'] = master['GradeDate'].apply(lambda d: get_spy_return(d, 6))
+master['excess_ret_1m'] = master['ret_1m'] - master['spy_ret_1m']
+master['excess_ret_3m'] = master['ret_3m'] - master['spy_ret_3m']
+master['excess_ret_6m'] = master['ret_6m'] - master['spy_ret_6m']
