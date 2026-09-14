@@ -99,11 +99,12 @@ def get_spy_return(event_date, months):
     end_price = end_slice.iloc[0]['Close']
     return (end_price - start_price) / start_price
 
-spy_df = yf.Ticker("^GSPC").history(period="13y")
 
+spy_df = yf.Ticker("^GSPC").history(period="13y")
 pricedata = {}
 for i in stocks.values():
     pricedata[i] = yf.Ticker(i).history(period="13y")
+
 
 all = []
 for i in stocks.values():
