@@ -20,7 +20,7 @@ Buy-vs-hold comparisons showed the strongest and most consistent statistical sig
 
 **The takeaway:** analyst ratings appear to carry real short-term predictive signal, but that signal decays quickly rather than persisting. This is consistent with a market-efficiency explanation — any informational edge analysts have gets priced in fast, leaving little advantage for someone acting on the rating months later.
 
-| Comparison | Horizon | t-stat | p-value |
+| Comparison | Horizon | t-value | p-value |
 |---|---|---|---|
 | buy vs sell | 1m | 4.0709 | 0.0001 |
 | buy vs sell | 3m | 1.7973 | 0.0727 |
